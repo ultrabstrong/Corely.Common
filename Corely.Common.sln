@@ -35,6 +35,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "extensions", "extensions", 
 		Docs\extensions\string-extensions.md = Docs\extensions\string-extensions.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "http-handler", "http-handler", "{BB010222-EDD3-44BC-B9E1-AFF795B1EC84}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\http-handler\error-handler.md = Docs\http-handler\error-handler.md
+		Docs\http-handler\index.md = Docs\http-handler\index.md
+		Docs\http-handler\request-response-handler.md = Docs\http-handler\request-response-handler.md
+		Docs\http-handler\static-response-handler.md = Docs\http-handler\static-response-handler.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +64,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}
 		{997FDE95-8C14-4658-9B65-415991786CD8} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{BB010222-EDD3-44BC-B9E1-AFF795B1EC84} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6E6FB5CB-9259-4910-9795-B5858924D26C}

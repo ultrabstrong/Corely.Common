@@ -8,6 +8,10 @@ This library contains common utilities to help simplify common programming tasks
 Corely.Common provides a collection of utility classes and extensions that can be used in projects to simplify common programming tasks. These utilities include:
 
 - Redaction Provider for sanitizing sensitive data
+- Http handlers for 
+  - Request & response header/body logging
+  - Error response catching and logging
+  - Request interception with static response for testing
 - Delimited text (e.g. CSV, TSV) read / write utilities with support for large data sets
 - Paged Result for handling paginated data
 - Dispose Base for implementing disposable objects
