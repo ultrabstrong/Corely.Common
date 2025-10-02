@@ -37,10 +37,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "extensions", "extensions", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "http-handlers", "http-handlers", "{BB010222-EDD3-44BC-B9E1-AFF795B1EC84}"
 	ProjectSection(SolutionItems) = preProject
-		Docs\http-handler\error-handler.md = Docs\http-handler\error-handler.md
-		Docs\http-handler\index.md = Docs\http-handler\index.md
-		Docs\http-handler\request-response-handler.md = Docs\http-handler\request-response-handler.md
-		Docs\http-handler\static-response-handler.md = Docs\http-handler\static-response-handler.md
+		Docs\http-handlers\error-handler.md = Docs\http-handlers\error-handler.md
+		Docs\http-handlers\index.md = Docs\http-handlers\index.md
+		Docs\http-handlers\request-response-handler.md = Docs\http-handlers\request-response-handler.md
+		Docs\http-handlers\static-response-handler.md = Docs\http-handlers\static-response-handler.md
 	EndProjectSection
 EndProject
 Global
