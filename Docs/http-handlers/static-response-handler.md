@@ -13,7 +13,7 @@
 ## Options (`StaticResponseHandlerOptions`)
 | Property | Default | Description |
 |----------|---------|-------------|
-| `Enabled` | `true` | Master switch – if false acts as a transparent pass?through |
+| `Enabled` | `true` | Master switch ? if false acts as a transparent pass?through |
 | `PathStartsWith` | `/` | Absolute path prefix to match (e.g. `/stub/api`) |
 | `StatusCode` | `200 OK` | Returned HTTP status code |
 | `ContentType` | `application/json` | MIME type of the stubbed content |
@@ -21,17 +21,21 @@
 
 ## Registration Example
 ```csharp
+// Register handler. Some implementations of AddHttpMessageHandler don't do this internally
+services.TryAddTransient<HttpStaticResponseHandler>();
+
+// Options (could also use IOptions<StaticResponseHandlerOptions>)
+services.AddSingleton(new StaticResponseHandlerOptions
+{
+    Enabled = true,
+    PathStartsWith = "/external/test",
+    StatusCode = HttpStatusCode.Accepted,
+    ContentType = "application/json",
+    ResponseBody = "{\"ok\":true}"
+});
+
 services.AddHttpClient("stubbed")
-    .AddHttpMessageHandler(sp => new HttpStaticResponseHandler(
-        sp.GetRequiredService<ILogger<HttpStaticResponseHandler>>(),
-        new StaticResponseHandlerOptions
-        {
-            Enabled = true,
-            PathStartsWith = "/external/test",
-            StatusCode = HttpStatusCode.Accepted,
-            ContentType = "application/json",
-            ResponseBody = "{\"ok\":true}"
-        }));
+    .AddHttpMessageHandler<HttpStaticResponseHandler>();
 ```
 
 ## Usage
@@ -66,4 +70,4 @@ HTTP HttpStaticResponseHandler (intercept) evaluated in {ElapsedMs} ms
 ```
 
 ## Pass?Through Behavior
-When not matched it performs zero allocations beyond simple checks and delegates to the inner handler – safe to leave registered even when rarely used.
+When not matched it performs zero allocations beyond simple checks and delegates to the inner handler ? safe to leave registered even when rarely used.

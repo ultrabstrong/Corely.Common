@@ -18,6 +18,10 @@ services.AddLogging(b => b.AddConsole());
 ## Usage: Logging + Error Handlers
 Add detailed (opt‑in) request/response logging and non‑success error logging. This is the common production setup.
 ```csharp
+// Register handlers. Some implementations of AddHttpMessageHandler don't do this internally
+services.TryAddTransient<HttpErrorLoggingHandler>();
+services.TryAddTransient<HttpRequestResponseLoggingHandler>();
+
 services.AddHttpClient("observed")
     .AddHttpMessageHandler<HttpRequestResponseLoggingHandler>()  // Detailed opt‑in logging
     .AddHttpMessageHandler<HttpErrorLoggingHandler>();           // Non‑success error logging
@@ -39,6 +43,11 @@ services.AddSingleton(new StaticResponseHandlerOptions {
     ContentType = "application/json",
     ResponseBody = "{ \"example\": true }"
 });
+
+// Register handlers. Some implementations of AddHttpMessageHandler don't do this internally
+services.TryAddTransient<HttpErrorLoggingHandler>();
+services.TryAddTransient<HttpRequestResponseLoggingHandler>();
+services.TryAddTransient<HttpStaticResponseHandler>();
 
 services.AddHttpClient("stubbed")
     .AddHttpMessageHandler<HttpStaticResponseHandler>()          // Short‑circuit (when path matches)

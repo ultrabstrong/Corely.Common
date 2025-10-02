@@ -50,10 +50,11 @@ Sensitive headers become `[REDACTED]` in logged scopes:
 
 ## Example Registration
 ```csharp
+// Register handler. Some implementations of AddHttpMessageHandler don't do this internally
+services.TryAddTransient<HttpRequestResponseLoggingHandler>();
+
 services.AddHttpClient("observed")
-    .AddHttpMessageHandler(sp => new HttpRequestResponseLoggingHandler(
-        sp.GetRequiredService<ILogger<HttpRequestResponseLoggingHandler>>()
-    ));
+    .AddHttpMessageHandler<HttpRequestResponseLoggingHandler>();
 ```
 
 ## Example Usage

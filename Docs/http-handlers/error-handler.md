@@ -11,10 +11,11 @@
 
 ## Typical Registration
 ```csharp
+// Register handler. Some implementations of AddHttpMessageHandler don't do this internally
+services.TryAddTransient<HttpErrorLoggingHandler>();
+
 services.AddHttpClient("with-errors")
-    .AddHttpMessageHandler(sp => new HttpErrorLoggingHandler(
-        sp.GetRequiredService<ILogger<HttpErrorLoggingHandler>>()
-    ));
+    .AddHttpMessageHandler<HttpErrorLoggingHandler>();
 ```
 
 ## When To Use
