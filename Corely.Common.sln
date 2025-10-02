@@ -35,7 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "extensions", "extensions", 
 		Docs\extensions\string-extensions.md = Docs\extensions\string-extensions.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "http-handler", "http-handler", "{BB010222-EDD3-44BC-B9E1-AFF795B1EC84}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "http-handlers", "http-handlers", "{BB010222-EDD3-44BC-B9E1-AFF795B1EC84}"
 	ProjectSection(SolutionItems) = preProject
 		Docs\http-handler\error-handler.md = Docs\http-handler\error-handler.md
 		Docs\http-handler\index.md = Docs\http-handler\index.md

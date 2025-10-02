@@ -9,7 +9,7 @@
     <RepositoryUrl>https://github.com/ultrabstrong/Corely/tree/master/Corely.Common</RepositoryUrl>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/ultrabstrong/Corely</PackageProjectUrl>
-    <PackageTags>Corely Common Utilities Redaction Extensions Converters</PackageTags>
+    <PackageTags>Corely Common Utilities Redaction Http Extensions Converters</PackageTags>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Version>1.1.0</Version>
@@ -26,6 +26,17 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Corely.Common.UnitTests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
