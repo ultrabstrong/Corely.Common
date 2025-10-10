@@ -3,8 +3,8 @@
 `HttpRequestResponseLoggingHandler` provides structured, opt-in logging of HTTP request & response metadata, headers, and (optionally transformed) bodies. It aims to balance observability with safety & performance.
 
 ## Features
-- Opt-in per request for detailed request logging (`EnableRequestLogging()`)
-- Opt-in per request for detailed response logging (`EnableResponseLogging()`)
+- Opt-in per request for detailed request logging (`EnableRequestDetailLogging()`)
+- Opt-in per request for detailed response logging (`EnableResponseDetailLogging()`)
 - Always logs basic: `HTTP {Method} {Uri} responded {StatusCode} in {ElapsedMs} ms`
   - (Only when response logging NOT explicitly enabled for that request)
 - Redacts sensitive headers automatically (Authorization, Cookies, API keys, etc.)
@@ -21,8 +21,8 @@ var request = new HttpRequestMessage(HttpMethod.Post, "https://example/api/doc")
 {
     Content = new StringContent("{\"document_url\":\"abc\",\"name\":\"file.txt\"}")
 };
-request.EnableRequestLogging();
-request.EnableResponseLogging();
+request.EnableRequestDetailLogging();
+request.EnableResponseDetailLogging();
 ```
 
 ## Omitting JSON Fields
@@ -64,8 +64,8 @@ var request = new HttpRequestMessage(HttpMethod.Post, "https://svc/upload")
 {
     Content = new StringContent("{\"fileName\":\"big.bin\",\"payload\":\"<base64>...\"}")
 };
-request.EnableRequestLogging();
-request.EnableResponseLogging();
+request.EnableRequestDetailLogging();
+request.EnableResponseDetailLogging();
 request.OmitRequestJsonFields("payload");
 request.TruncateResponseJsonFields(("message", 200));
 
@@ -82,7 +82,7 @@ var response = await client.SendAsync(request);
 - If body read fails (stream not repeatable), it logs a debug message and proceeds
 
 ## Fallback Behavior
-If detailed response logging disabled (`EnableResponseLogging` not called), a single concise Information log line is written with latency only – no headers/body scopes.
+If detailed response logging disabled (`EnableResponseDetailLogging` not called), a single concise Information log line is written with latency only – no headers/body scopes.
 
 ## Safety
 - No mutation of the underlying content streams beyond buffering

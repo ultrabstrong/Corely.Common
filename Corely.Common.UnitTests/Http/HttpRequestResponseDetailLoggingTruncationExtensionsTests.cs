@@ -2,7 +2,7 @@ using Corely.Common.Http;
 
 namespace Corely.Common.UnitTests.Http;
 
-public class HttpRequestResponseLoggingTruncationExtensionsTests
+public class HttpRequestResponseDetailLoggingTruncationExtensionsTests
 {
     [Fact]
     public void TruncateRequestJsonFields_Sets_TupleArray_Option()

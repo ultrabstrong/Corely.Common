@@ -2,14 +2,14 @@ using Corely.Common.Http;
 
 namespace Corely.Common.UnitTests.Http;
 
-public class HttpRequestResponseLoggingExtensionsTests
+public class HttpRequestResponseDetailLoggingExtensionsTests
 {
     [Fact]
-    public void EnableRequestLogging_Sets_Request_Option_And_Is_Fluent()
+    public void EnableRequestDetailLogging_Sets_Request_Option_And_Is_Fluent()
     {
         var req = new HttpRequestMessage(HttpMethod.Get, "https://example.test/");
 
-        var returned = req.EnableRequestLogging();
+        var returned = req.EnableRequestDetailLogging();
 
         Assert.Same(req, returned);
         var has = req.Options.TryGetValue(
@@ -21,11 +21,11 @@ public class HttpRequestResponseLoggingExtensionsTests
     }
 
     [Fact]
-    public void EnableResponseLogging_Sets_Response_Option_And_Is_Fluent()
+    public void EnableResponseDetailLogging_Sets_Response_Option_And_Is_Fluent()
     {
         var req = new HttpRequestMessage(HttpMethod.Get, "https://example.test/");
 
-        var returned = req.EnableResponseLogging();
+        var returned = req.EnableResponseDetailLogging();
 
         Assert.Same(req, returned);
         var has = req.Options.TryGetValue(
@@ -41,7 +41,7 @@ public class HttpRequestResponseLoggingExtensionsTests
     {
         var req = new HttpRequestMessage(HttpMethod.Post, "https://example.test/");
 
-        req.EnableRequestResponseLogging();
+        req.EnableRequestResponseDetailLogging();
 
         var hasReq = req.Options.TryGetValue(
             new HttpRequestOptionsKey<bool>("LOG_REQUEST_DETAILS_OPTION"),
@@ -63,8 +63,8 @@ public class HttpRequestResponseLoggingExtensionsTests
     {
         var req = new HttpRequestMessage(HttpMethod.Get, "https://example.test/");
 
-        req.EnableRequestLogging().EnableRequestLogging();
-        req.EnableResponseLogging().EnableResponseLogging();
+        req.EnableRequestDetailLogging().EnableRequestDetailLogging();
+        req.EnableResponseDetailLogging().EnableResponseDetailLogging();
 
         var hasReq = req.Options.TryGetValue(
             new HttpRequestOptionsKey<bool>("LOG_REQUEST_DETAILS_OPTION"),

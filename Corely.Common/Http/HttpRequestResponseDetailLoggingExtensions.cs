@@ -2,9 +2,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Corely.Common.Http;
 
-public static class HttpRequestResponseLoggingExtensions
+public static class HttpRequestResponseDetailLoggingExtensions
 {
-    public static HttpRequestMessage EnableRequestResponseLogging(this HttpRequestMessage request)
+    public static HttpRequestMessage EnableRequestResponseDetailLogging(this HttpRequestMessage request)
     {
         request.Options.Set(
             new HttpRequestOptionsKey<bool>(
@@ -21,7 +21,7 @@ public static class HttpRequestResponseLoggingExtensions
         return request;
     }
 
-    public static HttpRequestMessage EnableRequestLogging(this HttpRequestMessage request)
+    public static HttpRequestMessage EnableRequestDetailLogging(this HttpRequestMessage request)
     {
         request.Options.Set(
             new HttpRequestOptionsKey<bool>(
@@ -32,7 +32,7 @@ public static class HttpRequestResponseLoggingExtensions
         return request;
     }
 
-    public static HttpRequestMessage EnableResponseLogging(this HttpRequestMessage request)
+    public static HttpRequestMessage EnableResponseDetailLogging(this HttpRequestMessage request)
     {
         request.Options.Set(
             new HttpRequestOptionsKey<bool>(

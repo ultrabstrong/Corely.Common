@@ -4,7 +4,7 @@ using System.Net;
 
 namespace Corely.Common.UnitTests.Http;
 
-public class HttpRequestResponseLoggingHandlerTests
+public class HttpRequestResponseDetailLoggingHandlerTests
 {
     [Fact]
     public async Task Logs_Request_When_Enabled_IncludesHeaders_And_Body_Property()
@@ -26,7 +26,7 @@ public class HttpRequestResponseLoggingHandlerTests
         };
         request.Headers.Add("X-Test", "abc");
         request.Headers.Add("Authorization", "Bearer secret");
-        request.EnableRequestLogging();
+        request.EnableRequestDetailLogging();
 
         _ = await client.SendAsync(request);
 
@@ -81,7 +81,7 @@ public class HttpRequestResponseLoggingHandlerTests
 
         var request = new HttpRequestMessage(HttpMethod.Get, "https://example.test/");
         request.Headers.TryAddWithoutValidation(headerName, "secret");
-        request.EnableRequestLogging();
+        request.EnableRequestDetailLogging();
 
         _ = await client.SendAsync(request);
 
@@ -118,7 +118,7 @@ public class HttpRequestResponseLoggingHandlerTests
         var client = new HttpClient(handler);
 
         var request = new HttpRequestMessage(HttpMethod.Put, "https://example.test/res");
-        request.EnableResponseLogging();
+        request.EnableResponseDetailLogging();
 
         var resp = await client.SendAsync(request);
         Assert.Equal(HttpStatusCode.Accepted, resp.StatusCode);
@@ -215,8 +215,8 @@ public class HttpRequestResponseLoggingHandlerTests
         {
             Content = new StringContent("{\"document_url\":\"xyz\",\"name\":\"n\"}"),
         };
-        request.EnableRequestLogging();
-        request.EnableResponseLogging();
+        request.EnableRequestDetailLogging();
+        request.EnableResponseDetailLogging();
         request.OmitRequestJsonFields("document_url");
         request.OmitResponseJsonFields("document_url");
 
@@ -261,7 +261,7 @@ public class HttpRequestResponseLoggingHandlerTests
         {
             Content = new StringContent(json),
         };
-        request.EnableRequestLogging();
+        request.EnableRequestDetailLogging();
         request.OmitRequestJsonFields("document_url");
 
         _ = await client.SendAsync(request);

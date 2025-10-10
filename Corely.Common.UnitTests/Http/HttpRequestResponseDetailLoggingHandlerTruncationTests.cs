@@ -4,7 +4,7 @@ using System.Net;
 
 namespace Corely.Common.UnitTests.Http;
 
-public class HttpRequestResponseLoggingHandlerTruncationTests
+public class HttpRequestResponseDetailLoggingHandlerTruncationTests
 {
     [Fact]
     public async Task Truncates_Configured_Json_Fields_In_Request_And_Response_Bodies()
@@ -31,8 +31,8 @@ public class HttpRequestResponseLoggingHandlerTruncationTests
         {
             Content = new StringContent("{\"document_url\":\"xyz123\",\"name\":\"n\"}"),
         };
-        request.EnableRequestLogging();
-        request.EnableResponseLogging();
+        request.EnableRequestDetailLogging();
+        request.EnableResponseDetailLogging();
         request.TruncateRequestJsonFields(("document_url", 3));
         request.TruncateResponseJsonFields(("document_url", 3));
 
@@ -82,8 +82,8 @@ public class HttpRequestResponseLoggingHandlerTruncationTests
         {
             Content = new StringContent("{\"name\":\"ann\"}"),
         };
-        request.EnableRequestLogging();
-        request.EnableResponseLogging();
+        request.EnableRequestDetailLogging();
+        request.EnableResponseDetailLogging();
         request.TruncateRequestJsonFields(("name", 10));
         request.TruncateResponseJsonFields(("name", 10));
 
