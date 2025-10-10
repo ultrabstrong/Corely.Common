@@ -15,6 +15,11 @@ Minimal logging setup:
 services.AddLogging(b => b.AddConsole());
 ```
 
+Serilog example:
+```csharp
+services.AddLogging(b => b.AddSerilog(dispose: true));
+```
+
 ## Usage: Logging + Error Handlers
 Add detailed (opt‑in) request/response logging and non‑success error logging. This is the common production setup.
 ```csharp
@@ -23,8 +28,8 @@ services.TryAddTransient<HttpErrorLoggingHandler>();
 services.TryAddTransient<HttpRequestResponseLoggingHandler>();
 
 services.AddHttpClient("observed")
-    .AddHttpMessageHandler<HttpRequestResponseLoggingHandler>()  // Detailed opt‑in logging
-    .AddHttpMessageHandler<HttpErrorLoggingHandler>();           // Non‑success error logging
+    .AddHttpMessageHandler<HttpErrorLoggingHandler>()            // Non‑success error logging
+    .AddHttpMessageHandler<HttpRequestResponseLoggingHandler>(); // Detailed opt‑in logging
 ```
 Requests only include headers/body scopes when you call helper extension methods (see handler docs). Order these before retry / resiliency handlers if you want each attempt logged.
 
@@ -38,7 +43,7 @@ Register its options (can be a singleton or IOptions) and place it OUTER-most so
 ```csharp
 services.AddSingleton(new StaticResponseHandlerOptions {
     Enabled = true,
-    PathStartsWith = "/stub",      // Any request path starting with this prefix is intercepted
+    PathStartsWith = "/",      // matches all requests
     StatusCode = HttpStatusCode.OK,
     ContentType = "application/json",
     ResponseBody = "{ \"example\": true }"
@@ -50,15 +55,20 @@ services.TryAddTransient<HttpRequestResponseLoggingHandler>();
 services.TryAddTransient<HttpStaticResponseHandler>();
 
 services.AddHttpClient("stubbed")
-    .AddHttpMessageHandler<HttpStaticResponseHandler>()          // Short‑circuit (when path matches)
-    .AddHttpMessageHandler<HttpRequestResponseLoggingHandler>()  // Still can log intercepted call metadata
-    .AddHttpMessageHandler<HttpErrorLoggingHandler>();
+    .AddHttpMessageHandler<HttpErrorLoggingHandler>()
+    .AddHttpMessageHandler<HttpRequestResponseLoggingHandler>()   // Still can log intercepted call metadata
+    .AddHttpMessageHandler<HttpStaticResponseHandler>();          // Short‑circuit (when path matches)
 ```
 Disable (set `Enabled = false`) or remove this handler in production unless you explicitly need stub behavior.
 
-## Ordering Guidance (outer → inner)
-1. Static / short‑circuit handlers
-2. Diagnostics (request / response logging)
-3. Error logging & resiliency (e.g. retries / Polly)
-
-See each handler page for detailed features and configuration.
+## Disabling Microsoft / System HTTP Logs
+Registring ILogger enables default logging from Microsoft / System libraries, which may include HTTP request logs. You can configure logging filters to adjust verbosity as needed. Here is an example of how to do that with Serilog:
+```csharp
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Override("System", LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .CreateLogger();
+```

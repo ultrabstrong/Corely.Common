@@ -5,9 +5,9 @@ This is the comprehensive documentation for the Corely.Common library.
 ## Table of Contents
 - [Redaction Provider](redaction-provider.md)
 - [HTTP Handlers](http-handlers/index.md)
-  - [Logging Handler](http-handlers/logging-handler.md)
-  - [Error Handling Handler](http-handlers/error-handling-handler.md)
-  - [Static Response Handler](http-handlers/static-response-handler.md)]
+  - [Request / Response Logging](http-handlers/request-response-handler.md)
+  - [Error Logging](error-handler.md)
+  - [Static Response (Stub / Mock)](http-handlers/static-response-handler.md)
 - [Paged Result](paged-result.md)
 - [Dispose Base](dispose-base.md)
 - [File Paths](file-paths.md)

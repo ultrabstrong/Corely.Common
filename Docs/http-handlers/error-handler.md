@@ -1,15 +1,15 @@
 # HTTP Error Logging Handler
 
-`HttpErrorLoggingHandler` logs non?successful HTTP responses (i.e. responses where `IsSuccessStatusCode` is false) with method, URI, status code and basic content metadata. This keeps normal (successful) traffic noise low while surfacing failures.
+`HttpErrorLoggingHandler` logs non-successful HTTP responses (i.e. responses where `IsSuccessStatusCode` is false) with method, URI, status code and basic content metadata. This keeps normal (successful) traffic noise low while surfacing failures.
 
 ## Features
-- Logs only failed responses (4xx / 5xx, or any non?success status)
+- Logs only failed responses (4xx / 5xx, or any non-success status)
 - Includes: HTTP method, request URI, numeric status code
 - Adds response `Content-Length` and `Content-Type` (when available)
 - Minimal performance overhead (overhead timing logged at TRACE)
-- Safe: does not attempt to read or buffer the body to avoid side?effects
+- Safe: does not attempt to read or buffer the body to avoid side-effects
 
-## Typical Registration
+## Registration
 ```csharp
 // Register handler. Some implementations of AddHttpMessageHandler don't do this internally
 services.TryAddTransient<HttpErrorLoggingHandler>();
@@ -27,6 +27,3 @@ services.AddHttpClient("with-errors")
   `HTTP request failed. {Method} {Uri} responded {StatusCode}. ContentLength={ContentLength}, ContentType={ContentType}`
 - Trace (always):
   `HTTP HttpErrorLoggingHandler logging overhead {OverheadMs} ms`
-
-## Ordering Guidance
-Place after any request/response logging handler so that full details (if enabled) are already captured. Can be combined with retry policies – it will log each failed attempt unless you place it after a retry handler that only exposes the final response.

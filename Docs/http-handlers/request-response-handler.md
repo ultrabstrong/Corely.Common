@@ -1,10 +1,10 @@
 # HTTP Request / Response Logging Handler
 
-`HttpRequestResponseLoggingHandler` provides structured, opt?in logging of HTTP request & response metadata, headers, and (optionally transformed) bodies. It aims to balance observability with safety & performance.
+`HttpRequestResponseLoggingHandler` provides structured, opt-in logging of HTTP request & response metadata, headers, and (optionally transformed) bodies. It aims to balance observability with safety & performance.
 
 ## Features
-- Opt?in per request for detailed request logging (`EnableRequestLogging()`)
-- Opt?in per request for detailed response logging (`EnableResponseLogging()`)
+- Opt-in per request for detailed request logging (`EnableRequestLogging()`)
+- Opt-in per request for detailed response logging (`EnableResponseLogging()`)
 - Always logs basic: `HTTP {Method} {Uri} responded {StatusCode} in {ElapsedMs} ms`
   - (Only when response logging NOT explicitly enabled for that request)
 - Redacts sensitive headers automatically (Authorization, Cookies, API keys, etc.)
@@ -12,7 +12,7 @@
 - Optional JSON body field truncation with suffix `...[TRUNCATED]`
 - Preserves original request/response bodies (buffered safely)
 - Measures and logs internal logging overhead at TRACE
-- Thread?safe & allocation conscious
+- Thread-safe & allocation conscious
 
 ## Enabling Detailed Logging Per Request
 Detailed request/response logging is intentionally off by default to avoid large log volumes.
@@ -31,7 +31,7 @@ request.OmitRequestJsonFields("document_url", "apiKey");
 request.OmitResponseJsonFields("secret", "token");
 // "document_url":"[OMITTED]" in logged scope
 ```
-Uses a regex replacement preserving whitespace around the colon. Non?JSON or unparsable text is left unchanged.
+Uses a regex replacement preserving whitespace around the colon. Non-JSON or unparsable text is left unchanged.
 
 ## Truncating JSON Fields
 ```csharp
@@ -48,7 +48,7 @@ Sensitive headers become `[REDACTED]` in logged scopes:
 - Cookie / Set-Cookie
 - X-Api-Key / Api-Key
 
-## Example Registration
+## Registration
 ```csharp
 // Register handler. Some implementations of AddHttpMessageHandler don't do this internally
 services.TryAddTransient<HttpRequestResponseLoggingHandler>();
@@ -57,7 +57,7 @@ services.AddHttpClient("observed")
     .AddHttpMessageHandler<HttpRequestResponseLoggingHandler>();
 ```
 
-## Example Usage
+## Usage
 ```csharp
 var client = httpClientFactory.CreateClient("observed");
 var request = new HttpRequestMessage(HttpMethod.Post, "https://svc/upload")
@@ -81,9 +81,6 @@ var response = await client.SendAsync(request);
 - Overhead stopwatch logged at TRACE: `HTTP HttpRequestResponseLoggingHandler logging overhead {OverheadMs} ms`
 - If body read fails (stream not repeatable), it logs a debug message and proceeds
 
-## Ordering Guidance
-Place before retry / error handlers so that each attempt can be captured if desired. Put after static stub handlers to avoid logging synthetic responses unless necessary.
-
 ## Fallback Behavior
 If detailed response logging disabled (`EnableResponseLogging` not called), a single concise Information log line is written with latency only – no headers/body scopes.
 
@@ -92,6 +89,6 @@ If detailed response logging disabled (`EnableResponseLogging` not called), a si
 - Regex field operations wrapped in try/catch with warning fallback
 
 ## When To Use
-- Debugging specific integration calls (opt?in per request)
+- Debugging specific integration calls (opt-in per request)
 - Capturing sanitized bodies for auditing
 - Measuring latency while protecting secrets
