@@ -19,14 +19,25 @@ public sealed class HttpErrorLoggingHandler(ILogger<HttpErrorLoggingHandler> log
         {
             var contentLength = response.Content?.Headers.ContentLength;
             var contentType = response.Content?.Headers.ContentType?.ToString();
-            logger.LogError(
-                "HTTP request failed. {Method} {Uri} responded {StatusCode}. ContentLength={ContentLength}, ContentType={ContentType}",
-                request.Method,
-                request.RequestUri,
-                (int)response.StatusCode,
-                contentLength,
-                contentType
-            );
+
+            var level = LogLevel.Error;
+            if (request.TryGetErrorLogLevel(out var configuredLevel))
+            {
+                level = configuredLevel;
+            }
+
+            if (level != LogLevel.None)
+            {
+                logger.Log(
+                    level,
+                    "HTTP request failed. {Method} {Uri} responded {StatusCode}. ContentLength={ContentLength}, ContentType={ContentType}",
+                    request.Method,
+                    request.RequestUri,
+                    (int)response.StatusCode,
+                    contentLength,
+                    contentType
+                );
+            }
         }
 
         overheadSw.Stop();
