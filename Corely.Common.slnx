@@ -1,0 +1,33 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="CONTRIBUTING.md" />
+    <File Path="LICENSE" />
+    <File Path="readme.md" />
+    <File Path="RebuildAndTest.ps1" />
+  </Folder>
+  <Folder Name="/Docs/">
+    <File Path="Docs/converters.md" />
+    <File Path="Docs/delimited-text.md" />
+    <File Path="Docs/dispose-base.md" />
+    <File Path="Docs/file-paths.md" />
+    <File Path="Docs/filtering-and-ordering.md" />
+    <File Path="Docs/index.md" />
+    <File Path="Docs/paged-result.md" />
+    <File Path="Docs/redaction-provider.md" />
+  </Folder>
+  <Folder Name="/Docs/extensions/">
+    <File Path="Docs/extensions/byte-array-extensions.md" />
+    <File Path="Docs/extensions/index.md" />
+    <File Path="Docs/extensions/null-checking-extensions.md" />
+    <File Path="Docs/extensions/regex-extensions.md" />
+    <File Path="Docs/extensions/string-extensions.md" />
+  </Folder>
+  <Folder Name="/Docs/http-handlers/">
+    <File Path="Docs/http-handlers/error-handler.md" />
+    <File Path="Docs/http-handlers/index.md" />
+    <File Path="Docs/http-handlers/request-response-handler.md" />
+    <File Path="Docs/http-handlers/static-response-handler.md" />
+  </Folder>
+  <Project Path="Corely.Common.UnitTests/Corely.Common.UnitTests.csproj" />
+  <Project Path="Corely.Common/Corely.Common.csproj" />
+</Solution>

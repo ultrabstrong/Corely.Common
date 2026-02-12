@@ -7,6 +7,7 @@ This library contains common utilities to help simplify common programming tasks
 ## Getting Started
 Corely.Common provides a collection of utility classes and extensions that can be used in projects to simplify common programming tasks. These utilities include:
 
+- Filtering & Ordering for type-safe query building with expression-based filters and sort orders
 - Redaction Provider for sanitizing sensitive data
 - Http handlers for 
   - Request & response header/body logging

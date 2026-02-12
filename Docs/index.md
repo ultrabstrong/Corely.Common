@@ -3,6 +3,7 @@
 This is the comprehensive documentation for the Corely.Common library.
 
 ## Table of Contents
+- [Filtering & Ordering](filtering-and-ordering.md)
 - [Redaction Provider](redaction-provider.md)
 - [HTTP Handlers](http-handlers/index.md)
   - [Request / Response Logging](http-handlers/request-response-handler.md)
