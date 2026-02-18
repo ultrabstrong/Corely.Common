@@ -41,27 +41,28 @@ public class OrderBuilder<T>
             throw new InvalidOperationException("No ordering specified. Call By() first.");
         }
 
-        IOrderedQueryable<T>? ordered = null;
-
         foreach (var clause in _clauses)
         {
-            if (ordered == null)
+            var methodName = (clause.IsPrimary, clause.Direction) switch
             {
-                ordered =
-                    clause.Direction == SortDirection.Ascending
-                        ? Queryable.OrderBy(query, (dynamic)clause.PropertyExpression)
-                        : Queryable.OrderByDescending(query, (dynamic)clause.PropertyExpression);
-            }
-            else
-            {
-                ordered =
-                    clause.Direction == SortDirection.Ascending
-                        ? Queryable.ThenBy(ordered, (dynamic)clause.PropertyExpression)
-                        : Queryable.ThenByDescending(ordered, (dynamic)clause.PropertyExpression);
-            }
+                (true, SortDirection.Ascending) => nameof(Queryable.OrderBy),
+                (true, _) => nameof(Queryable.OrderByDescending),
+                (false, SortDirection.Ascending) => nameof(Queryable.ThenBy),
+                (false, _) => nameof(Queryable.ThenByDescending),
+            };
+
+            query = query.Provider.CreateQuery<T>(
+                Expression.Call(
+                    typeof(Queryable),
+                    methodName,
+                    [typeof(T), clause.PropertyExpression.ReturnType],
+                    query.Expression,
+                    Expression.Quote(clause.PropertyExpression)
+                )
+            );
         }
 
-        return ordered!;
+        return (IOrderedQueryable<T>)query;
     }
 }
 

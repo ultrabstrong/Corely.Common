@@ -25,31 +25,29 @@ public static class ExpressionMapper
         if (clauses.Count == 0)
             return query;
 
-        IOrderedQueryable<TTarget>? ordered = null;
-
         foreach (var clause in clauses)
         {
             var mappedKeySelector = MapKeySelector<TSource, TTarget>(clause.PropertyExpression);
-
-            var source = ordered ?? (IQueryable<TTarget>)query;
-
-            if (clause.IsPrimary)
+            var methodName = (clause.IsPrimary, clause.Direction) switch
             {
-                ordered =
-                    clause.Direction == SortDirection.Ascending
-                        ? Queryable.OrderBy(query, (dynamic)mappedKeySelector)
-                        : Queryable.OrderByDescending(query, (dynamic)mappedKeySelector);
-            }
-            else
-            {
-                ordered =
-                    clause.Direction == SortDirection.Ascending
-                        ? Queryable.ThenBy(ordered!, (dynamic)mappedKeySelector)
-                        : Queryable.ThenByDescending(ordered!, (dynamic)mappedKeySelector);
-            }
+                (true, SortDirection.Ascending) => nameof(Queryable.OrderBy),
+                (true, _) => nameof(Queryable.OrderByDescending),
+                (false, SortDirection.Ascending) => nameof(Queryable.ThenBy),
+                (false, _) => nameof(Queryable.ThenByDescending),
+            };
+
+            query = query.Provider.CreateQuery<TTarget>(
+                Expression.Call(
+                    typeof(Queryable),
+                    methodName,
+                    [typeof(TTarget), mappedKeySelector.ReturnType],
+                    query.Expression,
+                    Expression.Quote(mappedKeySelector)
+                )
+            );
         }
 
-        return ordered ?? query;
+        return query;
     }
 
     private static LambdaExpression MapKeySelector<TSource, TTarget>(LambdaExpression source)
