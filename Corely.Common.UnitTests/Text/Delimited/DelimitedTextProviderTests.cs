@@ -17,16 +17,19 @@ public class DelimitedTextProviderTests
     }
 
     [Theory]
-    [InlineData(TokenDelimiter.Semicolon, ';', '"', "\r\n")]
-    [InlineData(TokenDelimiter.Pipe, '|', '"', "\r\n")]
-    [InlineData(TokenDelimiter.Tab, '\t', '"', "\r\n")]
-    [InlineData(TokenDelimiter.Comma, ',', '"', "\r\n")]
+    [InlineData(TokenDelimiter.Semicolon, ';', '"')]
+    [InlineData(TokenDelimiter.Pipe, '|', '"')]
+    [InlineData(TokenDelimiter.Tab, '\t', '"')]
+    [InlineData(TokenDelimiter.Comma, ',', '"')]
     public void Constructor_CreatesCorrectDelimiters_ForEnum(
         TokenDelimiter tokenDelimiter,
         char expectedTokenDelim,
-        char expectedTokenLiteral,
-        string expectedRecordDelim)
+        char expectedTokenLiteral)
     {
+        // The provider uses Environment.NewLine, so the expected record delimiter is the host's -
+        // CRLF on Windows, LF elsewhere - and cannot be an [InlineData] compile-time constant.
+        var expectedRecordDelim = Environment.NewLine;
+
         DelimitedTextProvider delimitedTextDataProvider = new(_logger, tokenDelimiter);
 
         var tokenDelim = NonPublicHelpers.GetNonPublicField<char>(
@@ -46,7 +49,7 @@ public class DelimitedTextProviderTests
     [Fact]
     public void WriteRecord_WritesCorrectRecord()
     {
-        string expected = "test1,te\"\"st2,\"te,st3\"\r\n";
+        string expected = $"test1,te\"\"st2,\"te,st3\"{Environment.NewLine}";
         string actual;
         using (MemoryStream stream = new())
         {
