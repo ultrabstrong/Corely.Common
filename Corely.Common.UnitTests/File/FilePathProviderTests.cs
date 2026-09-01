@@ -1,4 +1,4 @@
-﻿using Corely.Common.File;
+﻿﻿﻿using Corely.Common.File;
 using Corely.Common.UnitTests.ClassData;
 
 namespace Corely.Common.UnitTests.File;
@@ -13,6 +13,14 @@ public class TestableFilePathProvider : FilePathProvider
 
 public class FilePathProviderTests
 {
+    // System.IO.Path is platform-dependent: a backslash separates directories on Windows and is an
+    // ordinary filename character everywhere else. Hard-coded Windows paths therefore assert
+    // nothing meaningful when the suite runs on Linux, so paths are built for the host instead.
+    private static readonly string Root = OperatingSystem.IsWindows() ? @"C:\" : "/";
+
+    private static string P(params string[] segments) =>
+        System.IO.Path.Combine([Root, .. segments]);
+
     private readonly Mock<TestableFilePathProvider> _filePathProviderMock = new() { CallBase = true };
     private bool _doesFileExist;
 
@@ -33,24 +41,24 @@ public class FilePathProviderTests
         Assert.False(_filePathProviderMock.Object.DoesFileExist(path));
     }
 
-    [Theory]
-    [InlineData("C:\\file_that_does_not_exist.txt")]
-    public void DoesFileExist_WhenFileDoesNotExist_ReturnsFalse(string path)
+    [Fact]
+    public void DoesFileExist_WhenFileDoesNotExist_ReturnsFalse()
     {
         _doesFileExist = false;
         SetupStandardReturnForDoesFileExist();
 
-        Assert.False(_filePathProviderMock.Object.DoesFileExist(path));
+        Assert.False(
+            _filePathProviderMock.Object.DoesFileExist(P("file_that_does_not_exist.txt"))
+        );
     }
 
-    [Theory]
-    [InlineData("C:\\file_that_exists.txt")]
-    public void DoesFileExist_WhenFileExists_ReturnsTrue(string path)
+    [Fact]
+    public void DoesFileExist_WhenFileExists_ReturnsTrue()
     {
         _doesFileExist = true;
         SetupStandardReturnForDoesFileExist();
 
-        Assert.True(_filePathProviderMock.Object.DoesFileExist(path));
+        Assert.True(_filePathProviderMock.Object.DoesFileExist(P("file_that_exists.txt")));
     }
 
     [Theory]
@@ -68,14 +76,14 @@ public class FilePathProviderTests
     {
         static string append(int i) => i < 1 ? string.Empty : $"-[{i}]";
 
-        yield return [number, "C:\\file_that_exists.txt", $"C:\\file_that_exists{append(number)}.txt"];
-        yield return [number, "C:\\config.json.sample", $"C:\\config.json{append(number)}.sample"];
-        yield return [number, "C:\\config", $"C:\\config{append(number)}"];
-        yield return [number, "C:\\test.txt.txt", $"C:\\test.txt{append(number)}.txt"];
-        yield return [number, "C:\\nest1\\nest2\\file_that_exists.txt", $"C:\\nest1\\nest2\\file_that_exists{append(number)}.txt"];
-        yield return [number, "C:\\nest1\\nest2\\config.json.sample", $"C:\\nest1\\nest2\\config.json{append(number)}.sample"];
-        yield return [number, "C:\\nest1\\nest2\\config", $"C:\\nest1\\nest2\\config{append(number)}"];
-        yield return [number, "C:\\nest1\\nest2\\test.txt.txt", $"C:\\nest1\\nest2\\test.txt{append(number)}.txt"];
+        yield return [number, P("file_that_exists.txt"), P($"file_that_exists{append(number)}.txt")];
+        yield return [number, P("config.json.sample"), P($"config.json{append(number)}.sample")];
+        yield return [number, P("config"), P($"config{append(number)}")];
+        yield return [number, P("test.txt.txt"), P($"test.txt{append(number)}.txt")];
+        yield return [number, P("nest1", "nest2", "file_that_exists.txt"), P("nest1", "nest2", $"file_that_exists{append(number)}.txt")];
+        yield return [number, P("nest1", "nest2", "config.json.sample"), P("nest1", "nest2", $"config.json{append(number)}.sample")];
+        yield return [number, P("nest1", "nest2", "config"), P("nest1", "nest2", $"config{append(number)}")];
+        yield return [number, P("nest1", "nest2", "test.txt.txt"), P("nest1", "nest2", $"test.txt{append(number)}.txt")];
     }
 
     private void SetupDoesFileExistForGetOverwriteProtectedPath(int number)
@@ -98,14 +106,14 @@ public class FilePathProviderTests
 
     public static IEnumerable<object[]> GetFileNameWithExtensionTestData() =>
     [
-        ["C:\\file_that_exists.txt", "file_that_exists.txt"],
-            ["C:\\config.json.sample", "config.json.sample"],
-            ["C:\\config", "config"],
-            ["C:\\test.txt.txt", "test.txt.txt"],
-            ["C:\\nest1\\nest2\\file_that_exists.txt", "file_that_exists.txt"],
-            ["C:\\nest1\\nest2\\config.json.sample", "config.json.sample"],
-            ["C:\\nest1\\nest2\\config", "config"],
-            ["C:\\nest1\\nest2\\test.txt.txt", "test.txt.txt"]
+        [P("file_that_exists.txt"), "file_that_exists.txt"],
+            [P("config.json.sample"), "config.json.sample"],
+            [P("config"), "config"],
+            [P("test.txt.txt"), "test.txt.txt"],
+            [P("nest1", "nest2", "file_that_exists.txt"), "file_that_exists.txt"],
+            [P("nest1", "nest2", "config.json.sample"), "config.json.sample"],
+            [P("nest1", "nest2", "config"), "config"],
+            [P("nest1", "nest2", "test.txt.txt"), "test.txt.txt"]
     ];
 
     [Theory, MemberData(nameof(GetFileNameWithoutExtensionTestData))]
@@ -116,13 +124,13 @@ public class FilePathProviderTests
 
     public static IEnumerable<object[]> GetFileNameWithoutExtensionTestData() =>
     [
-        ["C:\\file_that_exists.txt", "file_that_exists"],
-            ["C:\\config.json.sample", "config.json"],
-            ["C:\\config", "config"],
-            ["C:\\test.txt.txt", "test.txt"],
-            ["C:\\nest1\\nest2\\file_that_exists.txt", "file_that_exists"],
-            ["C:\\nest1\\nest2\\config.json.sample", "config.json"],
-            ["C:\\nest1\\nest2\\config", "config"],
-            ["C:\\nest1\\nest2\\test.txt.txt", "test.txt"]
+        [P("file_that_exists.txt"), "file_that_exists"],
+            [P("config.json.sample"), "config.json"],
+            [P("config"), "config"],
+            [P("test.txt.txt"), "test.txt"],
+            [P("nest1", "nest2", "file_that_exists.txt"), "file_that_exists"],
+            [P("nest1", "nest2", "config.json.sample"), "config.json"],
+            [P("nest1", "nest2", "config"), "config"],
+            [P("nest1", "nest2", "test.txt.txt"), "test.txt"]
     ];
 }
