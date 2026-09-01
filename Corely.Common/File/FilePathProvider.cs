@@ -1,4 +1,4 @@
-﻿namespace Corely.Common.File;
+﻿﻿namespace Corely.Common.File;
 
 public class FilePathProvider : IFilePathProvider
 {
@@ -17,7 +17,14 @@ public class FilePathProvider : IFilePathProvider
         int i = 0;
         do
         {
-            newInfo = new($"{info.DirectoryName}\\{GetOverwriteProtectedFileName(info, ++i)}");
+            // Path.Combine rather than an interpolated separator: a hardcoded backslash is
+            // only a directory separator on Windows.
+            newInfo = new(
+                Path.Combine(
+                    info.DirectoryName ?? string.Empty,
+                    GetOverwriteProtectedFileName(info, ++i)
+                )
+            );
         }
         while (DoesFileExist(newInfo.FullName));
 
