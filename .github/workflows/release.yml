@@ -24,11 +24,11 @@ jobs:
       id-token: write # required for nuget.org to issue the short-lived key
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # The project targets net8.0, but the solution is a .slnx which the 8.0 SDK cannot open,
       # so a newer SDK is installed alongside the 8.0 targeting pack.
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: |
             8.0.x
@@ -71,7 +71,7 @@ jobs:
           --source https://api.nuget.org/v3/index.json
           --skip-duplicate
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: packages
           path: ./artifacts/*
