@@ -61,3 +61,13 @@ public static async Task<T?> ReadJsonBodyAsync<T>(
 
 - `Corely.Common/Http/HttpResponseMessageJsonExtensions.cs` — remove `LoadIntoBufferAsync` call
 - `Corely.Common.UnitTests/Http/HttpResponseMessageJsonExtensionsTests.cs` — verify existing tests still pass; no new tests needed as behavior is unchanged
+
+## Status
+
+Implemented. `LoadIntoBufferAsync` removed; `Corely.Common` 2.0.1.
+
+One departure from the plan, which said no new tests were needed because behavior is unchanged:
+every existing test used `StringContent`, which is already in memory, so all of them passed with or
+without the buffering call and none of them exercised what the change actually removes. Added a test
+that deserializes from a forward-only, non-seekable stream - the shape of a real chunked network
+response - so the streaming path is covered.

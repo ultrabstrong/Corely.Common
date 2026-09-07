@@ -83,6 +83,77 @@ public class HttpResponseMessageJsonExtensionsTests
         Assert.Null(result);
     }
 
+    [Fact]
+    public async Task ReadJsonBodyAsync_Deserializes_From_A_NonSeekable_Stream()
+    {
+        // The other tests use StringContent, which is already in memory and so would pass whether
+        // or not the content were buffered first. A real network response is forward-only, which
+        // is what this covers.
+        var json = "{\"Name\":\"delta\",\"Value\":13}";
+        using var resp = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+        {
+            Content = new StreamContent(
+                new ForwardOnlyStream(new MemoryStream(Encoding.UTF8.GetBytes(json)))
+            ),
+        };
+
+        var result = await resp.ReadJsonBodyAsync<SampleDto>();
+
+        Assert.NotNull(result);
+        Assert.Equal("delta", result!.Name);
+        Assert.Equal(13, result.Value);
+    }
+
+    /// <summary>
+    /// Read-once, non-seekable, and unaware of its own length - the shape of a chunked network
+    /// response.
+    /// </summary>
+    private sealed class ForwardOnlyStream(Stream inner) : Stream
+    {
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+
+        public override long Position
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        public override int Read(byte[] buffer, int offset, int count) =>
+            inner.Read(buffer, offset, count);
+
+        public override Task<int> ReadAsync(
+            byte[] buffer,
+            int offset,
+            int count,
+            CancellationToken cancellationToken
+        ) => inner.ReadAsync(buffer, offset, count, cancellationToken);
+
+        public override ValueTask<int> ReadAsync(
+            Memory<byte> buffer,
+            CancellationToken cancellationToken = default
+        ) => inner.ReadAsync(buffer, cancellationToken);
+
+        public override void Flush() { }
+
+        public override long Seek(long offset, SeekOrigin origin) =>
+            throw new NotSupportedException();
+
+        public override void SetLength(long value) => throw new NotSupportedException();
+
+        public override void Write(byte[] buffer, int offset, int count) =>
+            throw new NotSupportedException();
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                inner.Dispose();
+            base.Dispose(disposing);
+        }
+    }
+
     private sealed class TestLogger : ILogger
     {
         public List<(LogLevel level, Exception? exception, string message)> Entries { get; } = [];
