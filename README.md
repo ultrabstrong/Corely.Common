@@ -27,7 +27,7 @@ Details about each utility can be found in the [documentation](https://github.co
 [Corely.Common](https://github.com/ultrabstrong/Corely.Common)
 
 ## Contributing
-We welcome contributions! Please read our [contributing guidelines](CONTRIBUTING.md) to get started.
+We welcome contributions! Please read our [contributing guidelines](https://github.com/ultrabstrong/Corely.Common/blob/master/CONTRIBUTING.md) to get started.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
