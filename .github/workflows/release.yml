@@ -25,6 +25,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # version check compares against the last release tag
 
       # The project targets net8.0, but the solution is a .slnx which the 8.0 SDK cannot open,
       # so a newer SDK is installed alongside the 8.0 targeting pack.
@@ -32,6 +34,10 @@ jobs:
         with:
           dotnet-version: |
             10.0.x
+
+      # Publishing an unbumped package skips it as a duplicate and still reports success.
+      - name: Package versions
+        run: STRICT=1 bash scripts/check-package-versions.sh
 
       - name: Restore
         run: dotnet restore Corely.Common.slnx
