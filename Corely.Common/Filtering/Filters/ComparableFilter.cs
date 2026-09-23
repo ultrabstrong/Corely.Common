@@ -63,27 +63,27 @@ public class ComparableFilter<T> : IFilterOperation
         {
             ComparableFilterOperation.Equals => Expression.Equal(
                 property,
-                Expression.Constant(_value!.Value, typeof(T))
+                Constant(_value!.Value, property)
             ),
             ComparableFilterOperation.NotEquals => Expression.NotEqual(
                 property,
-                Expression.Constant(_value!.Value, typeof(T))
+                Constant(_value!.Value, property)
             ),
             ComparableFilterOperation.GreaterThan => Expression.GreaterThan(
                 property,
-                Expression.Constant(_value!.Value, typeof(T))
+                Constant(_value!.Value, property)
             ),
             ComparableFilterOperation.GreaterThanOrEqual => Expression.GreaterThanOrEqual(
                 property,
-                Expression.Constant(_value!.Value, typeof(T))
+                Constant(_value!.Value, property)
             ),
             ComparableFilterOperation.LessThan => Expression.LessThan(
                 property,
-                Expression.Constant(_value!.Value, typeof(T))
+                Constant(_value!.Value, property)
             ),
             ComparableFilterOperation.LessThanOrEqual => Expression.LessThanOrEqual(
                 property,
-                Expression.Constant(_value!.Value, typeof(T))
+                Constant(_value!.Value, property)
             ),
             ComparableFilterOperation.Between => BuildBetweenExpression(property),
             ComparableFilterOperation.NotBetween => BuildNotBetweenExpression(property),
@@ -107,21 +107,21 @@ public class ComparableFilter<T> : IFilterOperation
     {
         var gte = Expression.GreaterThanOrEqual(
             property,
-            Expression.Constant(_value!.Value, typeof(T))
+            Constant(_value!.Value, property)
         );
         var lte = Expression.LessThanOrEqual(
             property,
-            Expression.Constant(_upperValue!.Value, typeof(T))
+            Constant(_upperValue!.Value, property)
         );
         return Expression.AndAlso(gte, lte);
     }
 
     private BinaryExpression BuildNotBetweenExpression(Expression property)
     {
-        var lt = Expression.LessThan(property, Expression.Constant(_value!.Value, typeof(T)));
+        var lt = Expression.LessThan(property, Constant(_value!.Value, property));
         var gt = Expression.GreaterThan(
             property,
-            Expression.Constant(_upperValue!.Value, typeof(T))
+            Constant(_upperValue!.Value, property)
         );
         return Expression.OrElse(lt, gt);
     }
@@ -131,10 +131,17 @@ public class ComparableFilter<T> : IFilterOperation
         var containsMethod = typeof(Enumerable)
             .GetMethods()
             .First(m => m.Name == nameof(Enumerable.Contains) && m.GetParameters().Length == 2)
-            .MakeGenericMethod(typeof(T));
+            .MakeGenericMethod(property.Type);
 
-        return Expression.Call(containsMethod, Expression.Constant(_values), property);
+        var values = Array.CreateInstance(property.Type, _values!.Length);
+        for (var i = 0; i < _values.Length; i++)
+            values.SetValue(_values[i], i);
+
+        return Expression.Call(containsMethod, Expression.Constant(values), property);
     }
+
+    private static ConstantExpression Constant(T value, Expression property) =>
+        Expression.Constant(value, property.Type);
 
     private enum ComparableFilterOperation
     {

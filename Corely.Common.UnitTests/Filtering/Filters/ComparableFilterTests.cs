@@ -155,6 +155,53 @@ public class ComparableFilterTests
     }
 
     [Fact]
+    public void GreaterThanOrEqual_SkipsNull_ForANullableProperty()
+    {
+        var builder = Filter
+            .For<TestEntity>()
+            .Where(e => e.NullableAge, ComparableFilter<int>.GreaterThanOrEqual(25));
+        var result = Assert.Single(ApplyFilter(builder));
+        Assert.Equal(30, result.NullableAge);
+    }
+
+    [Fact]
+    public void Between_SkipsNull_ForANullableProperty()
+    {
+        var builder = Filter
+            .For<TestEntity>()
+            .Where(e => e.NullableAge, ComparableFilter<int>.Between(0, 25));
+        var result = Assert.Single(ApplyFilter(builder));
+        Assert.Equal(20, result.NullableAge);
+    }
+
+    [Fact]
+    public void Equals_FiltersToExactValue_ForANullableProperty()
+    {
+        var builder = Filter
+            .For<TestEntity>()
+            .Where(e => e.NullableAge, ComparableFilter<int>.Equals(20));
+        Assert.Equal("B", Assert.Single(ApplyFilter(builder)).Name);
+    }
+
+    [Fact]
+    public void In_FiltersToListedValues_ForANullableProperty()
+    {
+        var builder = Filter
+            .For<TestEntity>()
+            .Where(e => e.NullableAge, ComparableFilter<int>.In(20, 30));
+        Assert.Equal(["B", "C"], ApplyFilter(builder).Select(e => e.Name));
+    }
+
+    [Fact]
+    public void NotIn_KeepsNull_ForANullableProperty()
+    {
+        var builder = Filter
+            .For<TestEntity>()
+            .Where(e => e.NullableAge, ComparableFilter<int>.NotIn(20));
+        Assert.Equal(["A", "C"], ApplyFilter(builder).Select(e => e.Name));
+    }
+
+    [Fact]
     public void IsNull_FiltersNullableToNull()
     {
         var builder = Filter
