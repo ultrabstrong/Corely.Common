@@ -22,14 +22,6 @@ public static class NonPublicHelpers
         return (T?)methodInfo.Invoke(classInstance, args);
     }
 
-    /// <summary>
-    /// Use this when method is overloaded
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="classInstance"></param>
-    /// <param name="methodName"></param>
-    /// <param name="args"></param>
-    /// <returns></returns>
     public static T? InvokeNonPublicMethod<T>(object classInstance, string methodName, params (Type, object)[] args)
     {
         var methodInfo = GetNonPublicMethod(classInstance, methodName, [.. args.Select(a => a.Item1)])
@@ -40,7 +32,6 @@ public static class NonPublicHelpers
     private static MethodInfo? GetNonPublicMethod(object classInstance, string methodName)
     {
         var methodInfo = classInstance.GetType().GetMethod(methodName, BINDING_FLAGS)
-            // This is mostly for cases where class is wrapped for unit testing
             ?? classInstance.GetType().BaseType?.GetMethod(methodName, BINDING_FLAGS);
 
         return methodInfo;

@@ -36,7 +36,6 @@ public class HttpResponseMessageJsonExtensionsTests
     [Fact]
     public async Task ReadJsonBodyAsync_Is_CaseInsensitive()
     {
-        // Deliberately different casing
         var json = "{\"name\":\"beta\",\"value\":7}";
         using var resp = CreateJsonResponse(json);
 
@@ -50,7 +49,7 @@ public class HttpResponseMessageJsonExtensionsTests
     [Fact]
     public async Task ReadJsonBodyAsync_Returns_Null_And_Logs_On_Invalid_Json()
     {
-        var invalidJson = "{\"Name\":\"gamma\",\"Value\":not-a-number}"; // invalid number
+        var invalidJson = "{\"Name\":\"gamma\",\"Value\":not-a-number}";
         using var resp = CreateJsonResponse(invalidJson);
         var logger = new TestLogger();
 
@@ -86,9 +85,6 @@ public class HttpResponseMessageJsonExtensionsTests
     [Fact]
     public async Task ReadJsonBodyAsync_Deserializes_From_A_NonSeekable_Stream()
     {
-        // The other tests use StringContent, which is already in memory and so would pass whether
-        // or not the content were buffered first. A real network response is forward-only, which
-        // is what this covers.
         var json = "{\"Name\":\"delta\",\"Value\":13}";
         using var resp = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
         {
@@ -104,10 +100,6 @@ public class HttpResponseMessageJsonExtensionsTests
         Assert.Equal(13, result.Value);
     }
 
-    /// <summary>
-    /// Read-once, non-seekable, and unaware of its own length - the shape of a chunked network
-    /// response.
-    /// </summary>
     private sealed class ForwardOnlyStream(Stream inner) : Stream
     {
         public override bool CanRead => true;

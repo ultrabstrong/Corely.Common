@@ -16,7 +16,7 @@ public class PagedResult<T>
     {
         add
         {
-            _onGetNextPage -= value; // Ensure only one subscriber
+            _onGetNextPage -= value;
             _onGetNextPage += value;
         }
         remove

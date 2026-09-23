@@ -10,12 +10,6 @@ public static class ByteArrayBOMExtensions
     private static readonly byte[] _utf16BigEndianBom = [0xfe, 0xff];
     private static readonly byte[] _utf32BigEndianBom = [0x00, 0x00, 0xfe, 0xff];
 
-    /// <summary>
-    /// Determines a text file's encoding by analyzing its byte order mark (BOM).
-    /// Defaults to UTF8 when detection of the text file's endianness fails
-    /// </summary>
-    /// <param name="bom"></param>
-    /// <returns>The detected encoding</returns>
     public static Encoding GetByteOrderMarkEncoding(this byte[] bom)
     {
         if (bom.IsMatch(_utf8Bom)) { return new UTF8Encoding(true); }

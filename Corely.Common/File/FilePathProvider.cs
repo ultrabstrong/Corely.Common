@@ -2,7 +2,6 @@
 
 public class FilePathProvider : IFilePathProvider
 {
-    // This method exists to allow for mocking in unit tests.
     public virtual bool DoesFileExist(string filepath)
     {
         return System.IO.File.Exists(filepath);
@@ -17,8 +16,6 @@ public class FilePathProvider : IFilePathProvider
         int i = 0;
         do
         {
-            // Path.Combine rather than an interpolated separator: a hardcoded backslash is
-            // only a directory separator on Windows.
             newInfo = new(
                 Path.Combine(
                     info.DirectoryName ?? string.Empty,

@@ -15,11 +15,10 @@ public static class RegexExtensions
 
         foreach (Match match in regex.Matches(input))
         {
-            foreach (Group group in match.Groups.Cast<Group>().Skip(1)) // Skip the 0th group as it is the entire match
+            foreach (Group group in match.Groups.Cast<Group>().Skip(1))
             {
                 if (group.Success)
                 {
-                    // Append up to group index
                     sb.Append(inputSpan[previousGroupEnd..group.Index]);
                     sb.Append(replacement);
                     previousGroupEnd = group.Index + group.Length;
@@ -27,7 +26,6 @@ public static class RegexExtensions
             }
         }
 
-        // Append the remainder of the string
         if (previousGroupEnd < input.Length)
         {
             sb.Append(inputSpan[previousGroupEnd..]);

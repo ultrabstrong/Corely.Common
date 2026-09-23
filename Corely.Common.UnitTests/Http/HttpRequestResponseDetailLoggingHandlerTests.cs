@@ -45,7 +45,6 @@ public class HttpRequestResponseDetailLoggingHandlerTests
             Times.AtLeastOnce
         );
 
-        // Verify headers and body are in scope; Authorization must be redacted
         var scopeDict = capturedScopes
             .Select(s => s as IDictionary<string, object?>)
             .LastOrDefault(d =>
@@ -123,7 +122,6 @@ public class HttpRequestResponseDetailLoggingHandlerTests
         var resp = await client.SendAsync(request);
         Assert.Equal(HttpStatusCode.Accepted, resp.StatusCode);
 
-        // Verify info line with latency
         logger.Verify(
             l =>
                 l.Log(
@@ -139,7 +137,6 @@ public class HttpRequestResponseDetailLoggingHandlerTests
             Times.AtLeastOnce
         );
 
-        // Verify headers and body in scope; sensitive header redacted
         var scopeDict = capturedScopes
             .Select(s => s as IDictionary<string, object?>)
             .LastOrDefault(d =>
@@ -153,7 +150,6 @@ public class HttpRequestResponseDetailLoggingHandlerTests
         Assert.Equal("[REDACTED]", headers["X-Api-Key"]);
         Assert.Equal("response-body", scopeDict!["HttpResponseBody"]);
 
-        // Response content should remain readable after logging
         var bodyAgain = await resp.Content!.ReadAsStringAsync();
         Assert.Equal("response-body", bodyAgain);
     }
@@ -170,7 +166,6 @@ public class HttpRequestResponseDetailLoggingHandlerTests
         var client = new HttpClient(handler);
 
         var request = new HttpRequestMessage(HttpMethod.Get, "https://example.test/");
-        // Do not set LogResponseKey
 
         _ = await client.SendAsync(request);
 

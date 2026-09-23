@@ -26,8 +26,6 @@ public class DelimitedTextProviderTests
         char expectedTokenDelim,
         char expectedTokenLiteral)
     {
-        // The provider uses Environment.NewLine, so the expected record delimiter is the host's -
-        // CRLF on Windows, LF elsewhere - and cannot be an [InlineData] compile-time constant.
         var expectedRecordDelim = Environment.NewLine;
 
         DelimitedTextProvider delimitedTextDataProvider = new(_logger, tokenDelimiter);
@@ -97,119 +95,83 @@ public class DelimitedTextProviderTests
 
     public static IEnumerable<object[]> WriteAllRecordsTestData() =>
     [
-        // No delimiters in tokens
         [new List<List<string>> {
                 new() { "test1", "test2", "test3" }
             }],
 
-            // One delimiter type in tokens
             [new List<List<string>>() {
-                //// Token literal
                 new() { "\"test1", "\"test2", "\"test3" },
                 new() { "test1\"", "test2\"", "test3\"" },
                 new() { "te\"st1", "te\"st2", "te\"st3" },
 
-                // Token delimiter
                 new() { ",test1", ",test2", ",test3" },
                 new() { "test1,", "test2,", "test3," },
                 new() { "te,st1", "te,st2", "te,st3" },
 
-                // Record delimiter
                 new() { "\r\ntest1", "\r\ntest2", "\r\ntest3" },
                 new() { "test1\r\n", "test2\r\n", "test3\r\n" },
                 new() { "te\r\nst1", "te\r\nst2", "te\r\nst3" },
             }],
 
-            // Mixed delimiter types in tokens
             [new List<List<string>>() {
-                // Token literal and token delimiter
-
-                    // Token literal first
                 new() { "\",test1", "\",test2", "\",test3" },
                 new() { "test1\",", "test2\",", "test3\"," },
                 new() { "te\",st1", "te\",st2", "te\",st3" },
 
-                    // Token delimiter first
                 new() { ",\"test1", ",\"test2", ",\"test3" },
                 new() { "test1,\"", "test2,\"", "test3,\"" },
                 new() { "te,\"st1", "te,\"st2", "te,\"st3" },
 
-                // Token literal and record delimiter
-
-                    // Token literal first
                 new() { "\"\r\ntest1", "\"\r\ntest2", "\"\r\ntest3" },
                 new() { "test1\"\r\n", "test2\"\r\n", "test3\"\r\n" },
                 new() { "te\"\r\nst1", "te\"\r\nst2", "te\"\r\nst3" },
 
-                    // Record delimiter first
                 new() { "\r\n\"test1", "\r\n\"test2", "\r\n\"test3" },
                 new() { "test1\"\r\n", "test2\"\r\n", "test3\"\r\n" },
                 new() { "te\"\r\nst1", "te\"\r\nst2", "te\"\r\nst3" },
 
-                // Token delimiter and record delimiter
-
-                    // Token delimiter first
                 new() { ",\r\ntest1", ",\r\ntest2", ",\r\ntest3" },
                 new() { "test1,\r\n", "test2,\r\n", "test3,\r\n" },
                 new() { "te,\r\nst1", "te,\r\nst2", "te,\r\nst3" },
-                    // Record delimiter first
                 new() { "\r\n,test1", "\r\n,test2", "\r\n,test3" },
                 new() { "test1\r\n,", "test2\r\n,", "test3\r\n," },
                 new() { "te\r\nst1,", "te\r\n,st2", "te\r\n,st3" },
             }],
 
-            // Mixed delimiter types in tokens with excess token literals
             [new List<List<string>>() {
-                // Token literal (2x) and token delimiter
-
-                    // Token literal first
                 new() { "\"\",test1", "\"\",test2", "\"\",test3" },
                 new() { "test1\"\",", "test2\"\",", "test3\"\"," },
                 new() { "te\"\",st1", "te\"\",st2", "te\"\",st3" },
 
-                    // Token delimiter first
                 new() { ",\"\"test1", ",\"\"test2", ",\"\"test3" },
                 new() { "test1,\"\"", "test2,\"\"", "test3,\"\"" },
                 new() { "te,\"\"st1", "te,\"\"st2", "te,\"\"st3" },
 
-                // Token literal (2x) and record delimiter
-
-                    // Token literal first
                 new() { "\"\"\r\ntest1", "\"\"\r\ntest2", "\"\"\r\ntest3" },
                 new() { "test1\"\"\r\n", "test2\"\"\r\n", "test3\"\"\r\n" },
                 new() { "te\"\"\r\nst1", "te\"\"\r\nst2", "te\"\"\r\nst3" },
 
-                    // Record delimiter first
                 new() { "\r\n\"\"test1", "\r\n\"\"test2", "\r\n\"\"test3" },
                 new() { "test1\"\"\r\n", "test2\"\"\r\n", "test3\"\"\r\n" },
                 new() { "te\"\"\r\nst1", "te\"\"\r\nst2", "te\"\"\r\nst3" },
                     
-                // Token literal (3x) and token delimiter
-
-                    // Token literal first
                 new() { "\"\"\",test1", "\"\"\",test2", "\"\"\",test3" },
                 new() { "test1\"\"\",", "test2\"\"\",", "test3\"\"\"," },
                 new() { "te\"\"\",st1", "te\"\"\",st2", "te\"\"\",st3" },
 
-                    // Token delimiter first
                 new() { ",\"\"\"test1", ",\"\"\"test2", ",\"\"\"test3" },
                 new() { "test1,\"\"\"", "test2,\"\"\"", "test3,\"\"\"" },
                 new() { "te,\"\"\"st1", "te,\"\"\"st2", "te,\"\"\"st3" },
 
-                // Token literal (3x) and record delimiter
-
-                    // Token literal first
                 new() { "\"\"\"\r\ntest1", "\"\"\"\r\ntest2", "\"\"\"\r\ntest3" },
                 new() { "test1\"\"\"\r\n", "test2\"\"\"\r\n", "test3\"\"\"\r\n" },
                 new() { "te\"\"\"\r\nst1", "te\"\"\"\r\nst2", "te\"\"\"\r\nst3" },
 
-                    // Record delimiter first
                 new() { "\r\n\"\"\"test1", "\r\n\"\"\"test2", "\r\n\"\"\"test3" },
                 new() { "test1\"\"\"\r\n", "test2\"\"\"\r\n", "test3\"\"\"\r\n" },
                 new() { "te\"\"\"\r\nst1", "te\"\"\"\r\nst2", "te\"\"\"\r\nst3" },
             }],
 
-            // All three delimiter types
             [new List<List<string>>() {
                 new() { "\",test1\r\ntest1.1,\"", "test2", "test3" },
                 new() { "test1", "\",test2\r\ntest2.1,\"", "test3" },

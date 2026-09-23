@@ -13,9 +13,6 @@ public class TestableFilePathProvider : FilePathProvider
 
 public class FilePathProviderTests
 {
-    // System.IO.Path is platform-dependent: a backslash separates directories on Windows and is an
-    // ordinary filename character everywhere else. Hard-coded Windows paths therefore assert
-    // nothing meaningful when the suite runs on Linux, so paths are built for the host instead.
     private static readonly string Root = OperatingSystem.IsWindows() ? @"C:\" : "/";
 
     private static string P(params string[] segments) =>

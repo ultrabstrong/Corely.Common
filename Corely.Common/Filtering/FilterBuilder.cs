@@ -13,14 +13,12 @@ public class FilterBuilder<T>
         _allowCollectionFilters = allowCollectionFilters;
     }
 
-    // String properties
     public FilterBuilder<T> Where(Expression<Func<T, string>> property, StringFilter filter)
     {
         _predicates.Add(BuildPredicate(property, filter));
         return this;
     }
 
-    // Comparable value type properties (int, long, float, double, decimal, DateTime, DateTimeOffset)
     public FilterBuilder<T> Where<TValue>(
         Expression<Func<T, TValue>> property,
         ComparableFilter<TValue> filter
@@ -31,7 +29,6 @@ public class FilterBuilder<T>
         return this;
     }
 
-    // Nullable comparable value type properties
     public FilterBuilder<T> Where<TValue>(
         Expression<Func<T, TValue?>> property,
         ComparableFilter<TValue> filter
@@ -42,35 +39,30 @@ public class FilterBuilder<T>
         return this;
     }
 
-    // Guid properties
     public FilterBuilder<T> Where(Expression<Func<T, Guid>> property, GuidFilter filter)
     {
         _predicates.Add(BuildPredicate(property, filter));
         return this;
     }
 
-    // Nullable Guid properties
     public FilterBuilder<T> Where(Expression<Func<T, Guid?>> property, GuidFilter filter)
     {
         _predicates.Add(BuildPredicate(property, filter));
         return this;
     }
 
-    // Bool properties
     public FilterBuilder<T> Where(Expression<Func<T, bool>> property, BoolFilter filter)
     {
         _predicates.Add(BuildPredicate(property, filter));
         return this;
     }
 
-    // Nullable Bool properties
     public FilterBuilder<T> Where(Expression<Func<T, bool?>> property, BoolFilter filter)
     {
         _predicates.Add(BuildPredicate(property, filter));
         return this;
     }
 
-    // Enum properties
     public FilterBuilder<T> Where<TEnum>(
         Expression<Func<T, TEnum>> property,
         EnumFilter<TEnum> filter
@@ -81,7 +73,6 @@ public class FilterBuilder<T>
         return this;
     }
 
-    // Nullable enum properties
     public FilterBuilder<T> Where<TEnum>(
         Expression<Func<T, TEnum?>> property,
         EnumFilter<TEnum> filter
@@ -92,7 +83,6 @@ public class FilterBuilder<T>
         return this;
     }
 
-    // Collection navigation property (one level deep)
     public FilterBuilder<T> Where<TChild>(
         Expression<Func<T, IEnumerable<TChild>>> collection,
         Action<FilterBuilder<TChild>> childFilter
@@ -114,7 +104,6 @@ public class FilterBuilder<T>
             return this;
         }
 
-        // Build: parent => parent.Collection.Any(child => childPredicate)
         var parentParam = Expression.Parameter(typeof(T), "parent");
         var collectionAccess = ExpressionHelper.ReplaceParameter(
             collection.Body,
@@ -146,7 +135,6 @@ public class FilterBuilder<T>
             return _predicates[0];
         }
 
-        // AND all predicates together with a shared parameter
         var param = Expression.Parameter(typeof(T), "x");
 
         Expression? combined = null;

@@ -15,10 +15,10 @@ public class ByteArrayBomExtensionsTests
     public static IEnumerable<object[]> GetByteOrderMarkEncoding() =>
     [
         [new byte[] { 0xef, 0xbb, 0xbf }, new UTF8Encoding(true)],
-            [new byte[] { 0xff, 0xfe, 0x00, 0x00 }, Encoding.UTF32], //UTF-32LE
-            [new byte[] { 0xff, 0xfe }, Encoding.Unicode], //UTF-16LE
-            [new byte[] { 0xfe, 0xff }, Encoding.BigEndianUnicode], //UTF-16BE
-            [new byte[] { 0x00, 0x00, 0xfe, 0xff }, new UTF32Encoding(true, true)],  //UTF-32BE
+            [new byte[] { 0xff, 0xfe, 0x00, 0x00 }, Encoding.UTF32],
+            [new byte[] { 0xff, 0xfe }, Encoding.Unicode],
+            [new byte[] { 0xfe, 0xff }, Encoding.BigEndianUnicode],
+            [new byte[] { 0x00, 0x00, 0xfe, 0xff }, new UTF32Encoding(true, true)],
             [new byte[] { 0x00, 0x00, 0x00, 0x00 }, new UTF8Encoding(false)]
     ];
 }

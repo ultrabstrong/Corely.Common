@@ -18,36 +18,6 @@ Formats with CSharpier, rebuilds, and runs the full suite. Run it before committ
 
 Bump `<Version>` in the library csproj, then tag: `git tag vX.Y.Z && git push origin vX.Y.Z`. The tag triggers `release.yml`, which builds, tests, packs and pushes to NuGet via OIDC. `ci.yml` runs build and test on every push and pull request.
 
-## Comments
-
-Comments explain **why**, not what. The code says what it does; a comment that restates it is a
-maintenance item that will drift out of date and mislead someone later.
-
-Write one when the reason is not visible from the code:
-
-- A non-obvious domain rule or constraint
-- Why this approach was chosen over an obvious alternative
-- A gotcha that would look like a bug to someone cleaning up
-
-Do not write one for:
-
-- What the next line does
-- Restating a method or variable name in prose
-- Narrating a sequence of steps that reads fine already
-
-Prefer fixing the name over adding the comment. Keep them short - if a comment needs a paragraph,
-it usually belongs in `Docs/` or a plan, not above the line.
-
-```csharp
-// BAD - restates the code
-// Create the user
-await CreateUserAsync(request);
-
-// GOOD - the reason is not in the code
-// Wildcard permission - Guid.Empty grants access to all resources of this type
-if (permission.ResourceId == Guid.Empty) return true;
-```
-
 ## Documentation
 
 `Docs/` describes **how the current version works**. Nothing else.

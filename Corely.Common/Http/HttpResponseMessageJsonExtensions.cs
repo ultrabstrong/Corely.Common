@@ -23,9 +23,6 @@ public static class HttpResponseMessageJsonExtensions
             if (response?.Content is null)
                 return default;
 
-            // Not buffered first: ReadFromJsonAsync pipes the response stream straight into the
-            // deserializer, and nothing here re-reads the content. Buffering would hold the whole
-            // body in memory alongside the object graph it deserializes into.
             return await response
                 .Content.ReadFromJsonAsync<T>(options ?? DefaultJsonOptions, cancellationToken)
                 .ConfigureAwait(false);
