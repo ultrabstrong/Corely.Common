@@ -1,7 +1,6 @@
+using Corely.Common.Extensions;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using System.Net.Http.Headers;
-using System.Text.RegularExpressions;
 
 namespace Corely.Common.Http;
 
@@ -55,10 +54,7 @@ public sealed class HttpRequestResponseLoggingHandler(ILogger<HttpRequestRespons
     {
         var scopeState = new Dictionary<string, object?>
         {
-            ["HttpRequestHeaders"] = BuildHeadersSnapshot(
-                request.Headers,
-                request.Content?.Headers
-            ),
+            ["HttpRequestHeaders"] = request.Headers.ToLoggingSnapshot(request.Content?.Headers),
         };
 
         if (request.Content is not null)
@@ -72,13 +68,13 @@ public sealed class HttpRequestResponseLoggingHandler(ILogger<HttpRequestRespons
                     .ConfigureAwait(false);
 
                 if (request.TryGetRequestOmitJsonFields(out var omitFieldsReq))
-                    body = OmitJsonFields(body, omitFieldsReq);
+                    body = body.WithJsonFieldsOmitted(omitFieldsReq);
 
                 if (request.TryGetRequestTruncateJsonFields(out var truncReq) && truncReq != null)
                 {
                     foreach (var (Field, Length) in truncReq)
                     {
-                        body = TruncateJsonFields(body, Field, Length);
+                        body = body.WithJsonFieldTruncated(Field, Length);
                     }
                 }
 
@@ -103,10 +99,7 @@ public sealed class HttpRequestResponseLoggingHandler(ILogger<HttpRequestRespons
     {
         var scopeState = new Dictionary<string, object?>
         {
-            ["HttpResponseHeaders"] = BuildHeadersSnapshot(
-                response.Headers,
-                response.Content?.Headers
-            ),
+            ["HttpResponseHeaders"] = response.Headers.ToLoggingSnapshot(response.Content?.Headers),
         };
 
         if (response.Content is not null)
@@ -120,7 +113,7 @@ public sealed class HttpRequestResponseLoggingHandler(ILogger<HttpRequestRespons
                     .ConfigureAwait(false);
 
                 if (request.TryGetResponseOmitJsonFields(out var omitFieldsResp))
-                    body = OmitJsonFields(body, omitFieldsResp);
+                    body = body.WithJsonFieldsOmitted(omitFieldsResp);
 
                 if (
                     request.TryGetResponseTruncateJsonFields(out var truncResp)
@@ -129,7 +122,7 @@ public sealed class HttpRequestResponseLoggingHandler(ILogger<HttpRequestRespons
                 {
                     foreach (var (Field, Length) in truncResp)
                     {
-                        body = TruncateJsonFields(body, Field, Length);
+                        body = body.WithJsonFieldTruncated(Field, Length);
                     }
                 }
 
@@ -150,93 +143,4 @@ public sealed class HttpRequestResponseLoggingHandler(ILogger<HttpRequestRespons
             elapsedMs
         );
     }
-
-    private string OmitJsonFields(string body, string[] fields)
-    {
-        try
-        {
-            if (fields.Length == 0)
-                return body;
-
-            var alternation = string.Join("|", fields.Select(Regex.Escape));
-            var pattern = $@"""({alternation})""(\s*):(\s*)""[^""]*""";
-
-            return Regex.Replace(
-                body,
-                pattern,
-                m => $"\"{m.Groups[1].Value}\"{m.Groups[2].Value}:{m.Groups[3].Value}\"[OMITTED]\"",
-                RegexOptions.CultureInvariant | RegexOptions.Singleline
-            );
-        }
-        catch (Exception ex)
-        {
-            logger.LogWarning(ex, "Failed to omit JSON fields from body during logging.");
-            return body;
-        }
-    }
-
-    private string TruncateJsonFields(string body, string field, int maxLength)
-    {
-        try
-        {
-            if (string.IsNullOrEmpty(body) || string.IsNullOrWhiteSpace(field) || maxLength < 0)
-                return body;
-
-            var escapedField = Regex.Escape(field);
-            var pattern = $@"""({escapedField})""(\s*):(\s*)""([^""]*)""";
-
-            return Regex.Replace(
-                body,
-                pattern,
-                m =>
-                {
-                    var value = m.Groups[4].Value;
-                    var truncated = value.Length > maxLength ? value[..maxLength] : value;
-                    var suffix = value.Length > maxLength ? "...[TRUNCATED]" : string.Empty;
-                    return $"\"{m.Groups[1].Value}\"{m.Groups[2].Value}:{m.Groups[3].Value}\"{truncated}{suffix}\"";
-                },
-                RegexOptions.CultureInvariant | RegexOptions.Singleline
-            );
-        }
-        catch (Exception ex)
-        {
-            logger.LogWarning(ex, "Failed to truncate JSON fields from body during logging.");
-            return body;
-        }
-    }
-
-    private static Dictionary<string, string> BuildHeadersSnapshot(
-        HttpHeaders primary,
-        HttpContentHeaders? contentHeaders
-    )
-    {
-        var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var h in primary)
-        {
-            result[h.Key] = MaskIfSensitive(h.Key, string.Join(",", h.Value));
-        }
-
-        if (contentHeaders is not null)
-        {
-            foreach (var h in contentHeaders)
-            {
-                result[$"Content-{h.Key}"] = MaskIfSensitive(h.Key, string.Join(",", h.Value));
-            }
-        }
-        return result;
-    }
-
-    private static readonly HashSet<string> SensitiveHeaders = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "Authorization",
-        "Proxy-Authorization",
-        "Cookie",
-        "Set-Cookie",
-        "X-Api-Key",
-        "Api-Key",
-    };
-
-    private static string MaskIfSensitive(string headerName, string value) =>
-        SensitiveHeaders.Contains(headerName) ? "[REDACTED]" : value;
 }

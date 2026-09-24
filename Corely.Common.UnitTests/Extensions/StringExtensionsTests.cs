@@ -82,4 +82,63 @@ public class StringExtensionsTests
     {
         Assert.Equal("!@#$%^&*()_+ ", "%21%40%23%24%25%5E%26%2A%28%29_%2B%20".UrlDecode());
     }
+
+    [Fact]
+    public void WithJsonFieldsOmitted_ReplacesEachNamedStringValue()
+    {
+        var body = "{\"password\" : \"p\",\"token\":\"t\",\"name\":\"n\"}";
+
+        Assert.Equal(
+            "{\"password\" : \"[OMITTED]\",\"token\":\"[OMITTED]\",\"name\":\"n\"}",
+            body.WithJsonFieldsOmitted(["password", "token"])
+        );
+    }
+
+    [Fact]
+    public void WithJsonFieldsOmitted_ReturnsBodyUnchanged_WhenNoFields()
+    {
+        var body = "{\"password\":\"p\"}";
+
+        Assert.Equal(body, body.WithJsonFieldsOmitted([]));
+    }
+
+    [Fact]
+    public void WithJsonFieldsOmitted_EscapesFieldNames()
+    {
+        var body = "{\"a.b\":\"x\",\"aXb\":\"y\"}";
+
+        Assert.Equal("{\"a.b\":\"[OMITTED]\",\"aXb\":\"y\"}", body.WithJsonFieldsOmitted(["a.b"]));
+    }
+
+    [Fact]
+    public void WithJsonFieldTruncated_CutsLongValueAndMarksIt()
+    {
+        var body = "{\"url\":\"abcdef\",\"name\":\"abcdef\"}";
+
+        Assert.Equal(
+            "{\"url\":\"abc...[TRUNCATED]\",\"name\":\"abcdef\"}",
+            body.WithJsonFieldTruncated("url", 3)
+        );
+    }
+
+    [Fact]
+    public void WithJsonFieldTruncated_LeavesValueAtLimitUnmarked()
+    {
+        var body = "{\"url\":\"abc\"}";
+
+        Assert.Equal(body, body.WithJsonFieldTruncated("url", 3));
+    }
+
+    [Theory]
+    [InlineData(" ", 3)]
+    [InlineData("url", -1)]
+    public void WithJsonFieldTruncated_ReturnsBodyUnchanged_WhenFieldBlankOrLengthNegative(
+        string field,
+        int maxLength
+    )
+    {
+        var body = "{\"url\":\"abcdef\"}";
+
+        Assert.Equal(body, body.WithJsonFieldTruncated(field, maxLength));
+    }
 }
