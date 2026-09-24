@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 
 namespace Corely.Common.Extensions;
 
@@ -10,18 +10,21 @@ public static class ByteArrayBOMExtensions
     private static readonly byte[] _utf16BigEndianBom = [0xfe, 0xff];
     private static readonly byte[] _utf32BigEndianBom = [0x00, 0x00, 0xfe, 0xff];
 
-    public static Encoding GetByteOrderMarkEncoding(this byte[] bom)
+    extension(byte[] bom)
     {
-        if (bom.IsMatch(_utf8Bom)) { return new UTF8Encoding(true); }
-        if (bom.IsMatch(_utf32LittleEndianBom)) { return Encoding.UTF32; }
-        if (bom.IsMatch(_utf16LittleEndianBom)) { return Encoding.Unicode; }
-        if (bom.IsMatch(_utf16BigEndianBom)) { return Encoding.BigEndianUnicode; }
-        if (bom.IsMatch(_utf32BigEndianBom)) { return new UTF32Encoding(true, true); }
+        public Encoding GetByteOrderMarkEncoding()
+        {
+            if (IsMatch(bom, _utf8Bom)) { return new UTF8Encoding(true); }
+            if (IsMatch(bom, _utf32LittleEndianBom)) { return Encoding.UTF32; }
+            if (IsMatch(bom, _utf16LittleEndianBom)) { return Encoding.Unicode; }
+            if (IsMatch(bom, _utf16BigEndianBom)) { return Encoding.BigEndianUnicode; }
+            if (IsMatch(bom, _utf32BigEndianBom)) { return new UTF32Encoding(true, true); }
 
-        return new UTF8Encoding(false);
+            return new UTF8Encoding(false);
+        }
     }
 
-    private static bool IsMatch(this byte[] source, byte[] pattern)
+    private static bool IsMatch(byte[] source, byte[] pattern)
     {
         if (source.Length < pattern.Length) { return false; }
 

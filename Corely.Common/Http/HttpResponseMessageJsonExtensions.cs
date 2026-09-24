@@ -11,30 +11,32 @@ public static class HttpResponseMessageJsonExtensions
         PropertyNameCaseInsensitive = true,
     };
 
-    public static async Task<T?> ReadJsonBodyAsync<T>(
-        this HttpResponseMessage? response,
-        JsonSerializerOptions? options = null,
-        CancellationToken cancellationToken = default,
-        ILogger? logger = null
-    )
+    extension(HttpResponseMessage? response)
     {
-        try
+        public async Task<T?> ReadJsonBodyAsync<T>(
+            JsonSerializerOptions? options = null,
+            CancellationToken cancellationToken = default,
+            ILogger? logger = null
+        )
         {
-            if (response?.Content is null)
-                return default;
+            try
+            {
+                if (response?.Content is null)
+                    return default;
 
-            return await response
-                .Content.ReadFromJsonAsync<T>(options ?? DefaultJsonOptions, cancellationToken)
-                .ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            logger?.LogWarning(
-                ex,
-                "Failed to deserialize {TypeName} from response body.",
-                typeof(T).Name
-            );
-            return default;
+                return await response
+                    .Content.ReadFromJsonAsync<T>(options ?? DefaultJsonOptions, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                logger?.LogWarning(
+                    ex,
+                    "Failed to deserialize {TypeName} from response body.",
+                    typeof(T).Name
+                );
+                return default;
+            }
         }
     }
 }

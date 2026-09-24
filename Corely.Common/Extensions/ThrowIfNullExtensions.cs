@@ -1,66 +1,66 @@
-﻿namespace Corely.Common.Extensions;
+namespace Corely.Common.Extensions;
 
 public static class ThrowIfNullExtensions
 {
-    public static T ThrowIfNull<T>(
-        this T? obj,
-        string paramName)
+    extension<T>(T? obj)
         where T : class
     {
-        ArgumentNullException.ThrowIfNull(obj, paramName);
-        return obj;
+        public T ThrowIfNull(string paramName)
+        {
+            ArgumentNullException.ThrowIfNull(obj, paramName);
+            return obj;
+        }
     }
 
-    public static IEnumerable<T> ThrowIfAnyNull<T>(
-        this IEnumerable<T?>? obj,
-        string paramName)
+    extension<T>(IEnumerable<T?>? obj)
         where T : class
     {
-        ArgumentNullException.ThrowIfNull(obj, paramName);
-        foreach (var value in obj)
+        public IEnumerable<T> ThrowIfAnyNull(string paramName)
         {
-            ArgumentNullException.ThrowIfNull(value, paramName);
+            ArgumentNullException.ThrowIfNull(obj, paramName);
+            foreach (var value in obj)
+            {
+                ArgumentNullException.ThrowIfNull(value, paramName);
+            }
+            return obj!;
         }
-        return obj!;
     }
 
-    public static string ThrowIfNullOrWhiteSpace(
-        this string? str,
-        string paramName)
+    extension(string? str)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(str, paramName);
-        return str;
-    }
-
-    public static IEnumerable<string> ThrowIfAnyNullOrWhiteSpace(
-        this IEnumerable<string>? obj,
-        string paramName)
-    {
-        ArgumentNullException.ThrowIfNull(obj, paramName);
-        foreach (var value in obj)
+        public string ThrowIfNullOrWhiteSpace(string paramName)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(value, paramName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(str, paramName);
+            return str;
         }
-        return obj;
-    }
 
-    public static string ThrowIfNullOrEmpty(
-        this string? str,
-        string paramName)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(str, paramName);
-        return str;
-    }
-
-    public static IEnumerable<string> ThrowIfAnyNullOrEmpty(
-        this IEnumerable<string>? obj,
-        string paramName)
-    {
-        ArgumentNullException.ThrowIfNull(obj, paramName);
-        foreach (var value in obj)
+        public string ThrowIfNullOrEmpty(string paramName)
         {
-            ArgumentException.ThrowIfNullOrEmpty(value, paramName);
+            ArgumentException.ThrowIfNullOrEmpty(str, paramName);
+            return str;
         }
-        return obj;
+    }
+
+    extension(IEnumerable<string>? obj)
+    {
+        public IEnumerable<string> ThrowIfAnyNullOrWhiteSpace(string paramName)
+        {
+            ArgumentNullException.ThrowIfNull(obj, paramName);
+            foreach (var value in obj)
+            {
+                ArgumentException.ThrowIfNullOrWhiteSpace(value, paramName);
+            }
+            return obj;
+        }
+
+        public IEnumerable<string> ThrowIfAnyNullOrEmpty(string paramName)
+        {
+            ArgumentNullException.ThrowIfNull(obj, paramName);
+            foreach (var value in obj)
+            {
+                ArgumentException.ThrowIfNullOrEmpty(value, paramName);
+            }
+            return obj;
+        }
     }
 }
