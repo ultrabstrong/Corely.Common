@@ -9,6 +9,7 @@ public class FileInfoExtensionsTests
     [InlineData("archive.tar.gz", "archive.tar")]
     [InlineData("noextension", "noextension")]
     [InlineData("txt.txt", "txt")]
+    [InlineData("x.gz.y.gz", "x.gz.y")]
     public void NameWithoutExtension_RemovesOnlyTheLastExtension(string name, string expected)
     {
         Assert.Equal(expected, new FileInfo(name).NameWithoutExtension());
