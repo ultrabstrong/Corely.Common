@@ -61,7 +61,7 @@ public sealed class HttpRequestResponseLoggingHandler(ILogger<HttpRequestRespons
         {
             try
             {
-                await request.Content.LoadIntoBufferAsync().ConfigureAwait(false);
+                await request.Content.LoadIntoBufferAsync(cancellationToken).ConfigureAwait(false);
 
                 var body = await request
                     .Content.ReadAsStringAsync(cancellationToken)
@@ -106,7 +106,7 @@ public sealed class HttpRequestResponseLoggingHandler(ILogger<HttpRequestRespons
         {
             try
             {
-                await response.Content.LoadIntoBufferAsync().ConfigureAwait(false);
+                await response.Content.LoadIntoBufferAsync(cancellationToken).ConfigureAwait(false);
 
                 var body = await response
                     .Content.ReadAsStringAsync(cancellationToken)
