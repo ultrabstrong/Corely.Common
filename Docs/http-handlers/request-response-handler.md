@@ -82,7 +82,7 @@ var response = await client.SendAsync(request);
 - If body read fails (stream not repeatable), it logs a debug message and proceeds
 
 ## Fallback Behavior
-If detailed response logging disabled (`EnableResponseDetailLogging` not called), a single concise Information log line is written with latency only – no headers/body scopes.
+If detailed response logging is disabled (`EnableResponseDetailLogging` not called), a single concise Information log line is written with latency only, with no headers/body scopes.
 
 ## Safety
 - No mutation of the underlying content streams beyond buffering

@@ -1,24 +1,24 @@
 # Filtering & Ordering
 
-A type-safe, expression-based system for building filter predicates and sort orders against any entity type. Provides a controlled subset of expression tree construction — callers get flexible, functional filtering without the full power (and risk) of raw `Expression<Func<T, bool>>`. Works with `IQueryable` (EF Core, LINQ to SQL, etc.) and in-memory `IEnumerable` via `.AsQueryable()`.
+A type-safe, expression-based system for building filter predicates and sort orders against any entity type. Provides a controlled subset of expression tree construction: callers get flexible, functional filtering without the full power (and risk) of raw `Expression<Func<T, bool>>`. Works with `IQueryable` (EF Core, LINQ to SQL, etc.) and in-memory `IEnumerable` via `.AsQueryable()`.
 
 ## Features
 
-- **Type-safe property selection** — lambda expressions verified at compile time
-- **Pre-built filter types** — `StringFilter`, `ComparableFilter<T>`, `GuidFilter`, `BoolFilter`, `EnumFilter<TEnum>`
-- **Composable** — multiple `.Where()` calls AND together automatically
-- **Nested collection filters** — filter parent entities by child collection predicates (one level deep)
-- **Ordering** — `OrderBuilder<T>` with primary and secondary sort support
-- **Expression mapping** — remap filters and orders from one type to another (e.g., model → entity)
+- **Type-safe property selection**: lambda expressions verified at compile time
+- **Pre-built filter types**: `StringFilter`, `ComparableFilter<T>`, `GuidFilter`, `BoolFilter`, `EnumFilter<TEnum>`
+- **Composable**: multiple `.Where()` calls AND together automatically
+- **Nested collection filters**: filter parent entities by child collection predicates (one level deep)
+- **Ordering**: `OrderBuilder<T>` with primary and secondary sort support
+- **Expression mapping**: remap filters and orders from one type to another (e.g., model → entity)
 
 ## Why FilterBuilder Instead of Raw Expressions?
 
-Raw `Expression<Func<T, bool>>` requires callers to write expressions against the types that the query provider consumes — typically internal entity types. This leaks implementation details and couples callers to the data layer. If the entity changes, every expression at every call site breaks.
+Raw `Expression<Func<T, bool>>` requires callers to write expressions against the types that the query provider consumes, typically internal entity types. This leaks implementation details and couples callers to the data layer. If the entity changes, every expression at every call site breaks.
 
 FilterBuilder solves this by separating **what to filter** (model properties + operations) from **how to filter** (expression trees against entities). Callers build filters against public model types using a discoverable API. The library converts those filters into expressions internally via `ExpressionMapper`, targeting whatever entity type the data layer uses. Callers never see or depend on internal types.
 
 ```csharp
-// Caller builds a filter against the public model — no knowledge of entities needed
+// Caller builds a filter against the public model, with no knowledge of entities needed
 var filter = Filter.For<UserModel>()
     .Where(u => u.Name, StringFilter.Contains("alice"))
     .Where(u => u.Age, ComparableFilter<int>.GreaterThan(18));
@@ -29,11 +29,11 @@ var predicate = ExpressionMapper.MapPredicate<UserModel, UserEntity>(filter.Buil
 
 **Key benefits:**
 
-- **No internal type exposure** — callers filter against public models, not data layer entities
-- **Discoverable API** — IntelliSense shows available properties (from the model) and available operations (from the filter type). No guessing what the query provider can or can't translate.
-- **Deterministic operations** — the set of supported filter operations is fixed and known. Every operation is guaranteed to translate cleanly across layers. No runtime surprises from untranslatable expressions.
-- **Consistent usage** — every consumer builds filters the same way, making the API predictable and the codebase uniform
-- **Cross-layer portability** — filters are structured data (property + operation + value) that can be inspected, logged, remapped, and eventually serialized
+- **No internal type exposure**: callers filter against public models, not data layer entities
+- **Discoverable API**: IntelliSense shows available properties (from the model) and available operations (from the filter type). No guessing what the query provider can or can't translate.
+- **Deterministic operations**: the set of supported filter operations is fixed and known. Every operation is guaranteed to translate cleanly across layers. No runtime surprises from untranslatable expressions.
+- **Consistent usage**: every consumer builds filters the same way, making the API predictable and the codebase uniform
+- **Cross-layer portability**: filters are structured data (property + operation + value) that can be inspected, logged, remapped, and eventually serialized
 
 ## Filtering
 
@@ -50,7 +50,7 @@ var filter = Filter.For<User>()
     .Where(u => u.Age, ComparableFilter<int>.GreaterThan(18))
     .Where(u => u.IsActive, BoolFilter.IsTrue());
 
-// Build the expression — returns null if no filters were added
+// Build the expression; returns null if no filters were added
 Expression<Func<User, bool>>? predicate = filter.Build();
 
 // Use with any IQueryable
@@ -131,15 +131,15 @@ var filter = Filter.For<Group>()
 // Translates to: g => g.Users.Any(u => u.Username.StartsWith("j"))
 ```
 
-Nested filters are capped at **one level deep** — the child `FilterBuilder` does not expose the collection `.Where()` overload. Attempting to nest deeper throws `InvalidOperationException`.
+Nested filters are capped at **one level deep**: the child `FilterBuilder` does not expose the collection `.Where()` overload. Attempting to nest deeper throws `InvalidOperationException`.
 
 ### Empty Filters
 
-An empty filter (no `.Where()` calls) returns `null` from `.Build()`, meaning "no predicate — return all results":
+An empty filter (no `.Where()` calls) returns `null` from `.Build()`, meaning "no predicate, return all results":
 
 ```csharp
 var filter = Filter.For<User>();
-var predicate = filter.Build(); // null — no filtering applied
+var predicate = filter.Build(); // null: no filtering applied
 ```
 
 ## Ordering

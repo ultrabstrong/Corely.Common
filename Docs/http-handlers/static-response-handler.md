@@ -13,7 +13,7 @@
 ## Options (`StaticResponseHandlerOptions`)
 | Property | Default | Description |
 |----------|---------|-------------|
-| `Enabled` | `true` | Master switch - if false acts as a transparent pass-through |
+| `Enabled` | `true` | Master switch. If false, acts as a transparent pass-through |
 | `PathStartsWith` | `/` | Absolute path prefix to match (e.g. `/stub/api`) |
 | `StatusCode` | `200 OK` | Returned HTTP status code |
 | `ContentType` | `application/json` | MIME type of the stubbed content |
@@ -70,4 +70,4 @@ HTTP HttpStaticResponseHandler (intercept) evaluated in {ElapsedMs} ms
 ```
 
 ## Pass-Through Behavior
-When not matched it performs zero allocations beyond simple checks and delegates to the inner handler - safe to leave registered even when rarely used.
+When not matched it performs zero allocations beyond simple checks and delegates to the inner handler, so it is safe to leave registered even when rarely used.
